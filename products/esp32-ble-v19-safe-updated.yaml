@@ -1,0 +1,749 @@
+substitutions:
+  name: jk-bms-ble
+  device_description: "Monitor and control a JK-BMS v19 via bluetooth"
+  external_components_source: github://syssi/esphome-jk-bms@main
+  mac_address: A4:C1:38:05:17:7D
+  # Please use "JK02_24S" if you own a old JK-BMS < hardware version 11.0 (hardware version >= 6.0 and < 11.0)
+  # Please use "JK02_32S" if you own a new JK-BMS >= hardware version 11.0 (f.e. JK-B2A8S20P hw 11.XW, sw 11.26)
+  # Please use "JK04" if you have some old JK-BMS <= hardware version 3.0 (f.e. JK-B2A16S hw 3.0, sw. 3.3.0)
+  protocol_version: JK02_32S
+
+esphome:
+  name: ${name}
+  comment: ${device_description}
+  min_version: 2024.6.0
+  project:
+    name: "syssi.esphome-jk-bms"
+    version: 2.3.0
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+external_components:
+  - source: ${external_components_source}
+    refresh: 0s
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  output_power: 8.5dB
+  power_save_mode: none
+  fast_connect: true
+
+ota:
+  platform: esphome
+  password: !secret ota_password
+  on_begin:
+    then:
+#This id commented below
+#      - switch.turn_off: ble_client_switch0
+      - logger.log: "BLE connection suspended for OTA update"
+
+logger:
+  level: WARN
+  logs:
+    esp32_ble_tracker: WARN
+    esp32_ble_client: WARN
+
+# If you don't use Home Assistant please remove this `api` section and uncomment the `mqtt` component!
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+# mqtt:
+#   broker: !secret mqtt_host
+#   username: !secret mqtt_username
+#   password: !secret mqtt_password
+#   id: mqtt_client
+
+esp32_ble_tracker:
+  scan_parameters:
+    active: false
+
+ble_client:
+  - mac_address: ${mac_address}
+    id: client0
+
+jk_bms_ble:
+  - ble_client_id: client0
+    protocol_version: ${protocol_version}
+    throttle: 5s
+    id: bms0
+
+binary_sensor:
+  - platform: jk_bms_ble
+    balancing:
+      name: "${name} balancing"
+    charging:
+      name: "${name} charging"
+    discharging:
+      name: "${name} discharging"
+    heating:
+      name: "${name} heating"
+    online_status:
+      name: "${name} online status"
+    dry_contact_1:
+      name: "${name} dry contact 1"
+    dry_contact_2:
+      name: "${name} dry contact 2"
+
+button:
+  - platform: jk_bms_ble
+    retrieve_settings:
+      name: "${name} retrieve settings"
+    retrieve_device_info:
+      name: "${name} retrieve device info"
+
+#I hid all numbers from changes. Only for reading
+number:
+  - platform: jk_bms_ble
+    jk_bms_ble_id: bms0
+    balance_trigger_voltage:
+      id: balance_trigger_voltage
+      name: "${name} balance trigger voltage"
+      internal: true #Hide control element
+    cell_count:
+      id: cell_count
+      name: "${name} cell count"
+      internal: true #Hide control element
+    total_battery_capacity:
+      id: total_battery_capacity
+      name: "${name} total battery capacity"
+      internal: true #Hide control element
+    cell_voltage_overvoltage_protection:
+      id: cell_voltage_overvoltage_protection
+      name: "${name} cell voltage overvoltage protection"
+      internal: true #Hide control element
+    cell_voltage_overvoltage_recovery:
+      id: cell_voltage_overvoltage_recovery
+      name: "${name} cell voltage overvoltage recovery"
+      internal: true #Hide control element
+    cell_voltage_undervoltage_protection:
+      id: cell_voltage_undervoltage_protection
+      name: "${name} cell voltage undervoltage protection"
+      internal: true #Hide control element
+    cell_voltage_undervoltage_recovery:
+      id: cell_voltage_undervoltage_recovery
+      name: "${name} cell voltage undervoltage recovery"
+      internal: true #Hide control element
+    balance_starting_voltage:
+      id: balance_starting_voltage
+      name: "${name} balance starting voltage"
+      internal: true #Hide control element
+    voltage_calibration:
+      id: voltage_calibration
+      name: "${name} voltage calibration"
+      internal: true #Hide control element
+    current_calibration:
+      id: current_calibration
+      name: "${name} current calibration"
+      internal: true #Hide control element
+    power_off_voltage:
+      id: power_off_voltage
+      name: "${name} power off voltage"
+      internal: true #Hide control element
+    max_balance_current:
+      id: max_balance_current
+      name: "${name} max balance current"
+      internal: true #Hide control element
+    max_charge_current:
+      id: max_charge_current
+      name: "${name} max charge current"
+      internal: true #Hide control element
+    max_discharge_current:
+      id: max_discharge_current
+      name: "${name} max discharge current"
+      internal: true #Hide control element
+    smart_sleep_voltage:
+      id: smart_sleep_voltage
+      name: "${name} smart sleep voltage"
+      internal: true #Hide control element
+    cell_soc100_voltage:
+      id: cell_soc100_voltage
+      name: "${name} cell soc100 voltage"
+      internal: true #Hide control element
+    cell_soc0_voltage:
+      id: cell_soc0_voltage
+      name: "${name} cell soc0 voltage"
+      internal: true #Hide control element
+    cell_request_charge_voltage:
+      id: cell_request_charge_voltage
+      name: "${name} cell request charge voltage"
+      internal: true #Hide control element
+    cell_request_float_voltage:
+      id: cell_request_float_voltage
+      name: "${name} cell request float voltage"
+      internal: true #Hide control element
+    cell_request_charge_voltage_time:
+      id: cell_request_charge_voltage_time
+      name: "${name} cell request charge voltage time"
+      internal: true #Hide control element
+    cell_request_float_voltage_time:
+      id: cell_request_float_voltage_time
+      name: "${name} cell request float voltage time"
+      internal: true #Hide control element
+    charge_overcurrent_protection_delay:
+      id: charge_overcurrent_protection_delay
+      name: "${name} charge overcurrent protection delay"
+      internal: true #Hide control element
+    charge_overcurrent_protection_recovery_time:
+      id: charge_overcurrent_protection_recovery_time
+      name: "${name} charge overcurrent protection recovery time"
+      internal: true #Hide control element
+    discharge_overcurrent_protection_delay:
+      id: discharge_overcurrent_protection_delay
+      name: "${name} discharge overcurrent protection delay"
+      internal: true #Hide control element
+    discharge_overcurrent_protection_recovery_time:
+      id: discharge_overcurrent_protection_recovery_time
+      name: "${name} discharge overcurrent protection recovery time"
+      internal: true #Hide control element
+    short_circuit_protection_delay:
+      id: short_circuit_protection_delay
+      name: "${name} short circuit protection delay"
+      internal: true #Hide control element
+    short_circuit_protection_recovery_time:
+      id: short_circuit_protection_recovery_time
+      name: "${name} short circuit protection recovery time"
+      internal: true #Hide control element
+
+    #Temperature
+    #Charge OTP
+    charge_overtemperature_protection:
+      id:  charge_overtemperature_protection
+      name: "${name} charge overtemperature protection"
+      internal: true #Hide control element
+    #Charge OTPR
+    charge_overtemperature_protection_recovery:
+      id: charge_overtemperature_protection_recovery
+      name: "${name} charge overtemperature protection recovery"
+      internal: true #Hide control element
+    #Discharge OTP  
+    discharge_overtemperature_protection:
+      id: discharge_overtemperature_protection
+      name: "${name} discharge overtemperature protection"
+      internal: true #Hide control element
+    #Discharge OTPR  
+    discharge_overtemperature_protection_recovery:
+      id: discharge_overtemperature_protection_recovery
+      name: "${name} discharge overtemperature protection recovery"
+      internal: true #Hide control element
+    #Charge UTP  
+    charge_undertemperature_protection:
+      id: charge_undertemperature_protection
+      name: "${name} charge undertemperature protection"
+      internal: true #Hide control element
+    #Charge UTPR  
+    charge_undertemperature_protection_recovery:
+      id: charge_undertemperature_protection_recovery
+      name: "${name} charge undertemperature protection recovery"
+      internal: true #Hide control element
+
+    #TEST PARAM
+    #Discharge UTP  
+    #discharge_undertemperature_protection:
+    #  id: discharge_undertemperature_protection
+    #  name: "${name} discharge undertemperature protection"
+    #  internal: true #Hide control element
+    #Discharge UTPR  
+    #discharge_undertemperature_protection_recovery:
+    #  id: discharge_undertemperature_protection_recovery
+    #  name: "${name} discharge undertemperature protection recovery"
+    #  internal: true #Hide control element
+    #END TEST PARAM
+    
+    power_tube_overtemperature_protection:
+      id: power_tube_overtemperature_protection
+      name: "${name} power tube overtemperature protection"
+      internal: true #Hide control element
+    power_tube_overtemperature_protection_recovery:
+      id: power_tube_overtemperature_protection_recovery
+      name: "${name} power tube overtemperature protection recovery"
+      internal: true #Hide control element
+    discharge_precharge_time:
+      id: discharge_precharge_time
+      name: "${name} discharge precharge time"
+      internal: true #Hide control element
+    heating_start_temperature:
+      id: heating_start_temperature
+      name: "${name} heating start temperature"
+      internal: true #Hide control element
+    heating_stop_temperature:
+      id: heating_stop_temperature
+      name: "${name} heating stop temperature"
+      internal: true #Hide control element
+
+sensor:
+ #########################################################
+ # JK BMS LIVE DATA (native sensors)
+ #########################################################
+  - platform: jk_bms_ble
+    jk_bms_ble_id: bms0
+        #monitoring
+    min_cell_voltage:
+      name: "${name} min cell voltage"
+    max_cell_voltage:
+      name: "${name} max cell voltage"
+    min_voltage_cell:
+      name: "${name} min voltage cell"
+    max_voltage_cell:
+      name: "${name} max voltage cell"
+    delta_cell_voltage:
+      name: "${name} delta cell voltage"
+    average_cell_voltage:
+      name: "${name} average cell voltage"
+    cell_voltage_1:
+      name: "${name} cell voltage 1"
+    cell_voltage_2:
+      name: "${name} cell voltage 2"
+    cell_voltage_3:
+      name: "${name} cell voltage 3"
+    cell_voltage_4:
+      name: "${name} cell voltage 4"
+    cell_voltage_5:
+      name: "${name} cell voltage 5"
+    cell_voltage_6:
+      name: "${name} cell voltage 6"
+    cell_voltage_7:
+      name: "${name} cell voltage 7"
+    cell_voltage_8:
+      name: "${name} cell voltage 8"
+    cell_voltage_9:
+      name: "${name} cell voltage 9"
+    cell_voltage_10:
+      name: "${name} cell voltage 10"
+    cell_voltage_11:
+      name: "${name} cell voltage 11"
+    cell_voltage_12:
+      name: "${name} cell voltage 12"
+    cell_voltage_13:
+      name: "${name} cell voltage 13"
+    cell_voltage_14:
+      name: "${name} cell voltage 14"
+    cell_voltage_15:
+      name: "${name} cell voltage 15"
+    cell_voltage_16:
+      name: "${name} cell voltage 16"
+
+# Turn off resistance as unnecessary
+    cell_resistance_1:
+      name: "${name} cell resistance 1"
+    cell_resistance_2:
+      name: "${name} cell resistance 2"
+    cell_resistance_3:
+      name: "${name} cell resistance 3"
+    cell_resistance_4:
+      name: "${name} cell resistance 4"
+    cell_resistance_5:
+      name: "${name} cell resistance 5"
+    cell_resistance_6:
+      name: "${name} cell resistance 6"
+    cell_resistance_7:
+      name: "${name} cell resistance 7"
+    cell_resistance_8:
+      name: "${name} cell resistance 8"
+    cell_resistance_9:
+      name: "${name} cell resistance 9"
+    cell_resistance_10:
+      name: "${name} cell resistance 10"
+    cell_resistance_11:
+      name: "${name} cell resistance 11"
+    cell_resistance_12:
+      name: "${name} cell resistance 12"
+    cell_resistance_13:
+      name: "${name} cell resistance 13"
+    cell_resistance_14:
+      name: "${name} cell resistance 14"
+    cell_resistance_15:
+      name: "${name} cell resistance 15"
+    cell_resistance_16:
+      name: "${name} cell resistance 16"
+
+    total_voltage:
+      name: "${name} total voltage"
+    current:
+      name: "${name} current"
+    heating_current:
+      name: "${name} heating current"
+    power:
+      name: "${name} power"
+    charging_power:
+      name: "${name} charging power"
+    discharging_power:
+      name: "${name} discharging power"
+    temperature_sensor_1:
+      name: "${name} temperature sensor 1"
+    temperature_sensor_2:
+      name: "${name} temperature sensor 2"
+    temperature_sensor_3:
+      name: "${name} temperature sensor 3"
+    temperature_sensor_4:
+      name: "${name} temperature sensor 4"
+    temperature_sensor_5:
+      name: "${name} temperature sensor 5"
+    power_tube_temperature:
+      name: "${name} power tube temperature"
+    balancing:
+      name: "${name} balancing"
+    state_of_charge:
+      name: "${name} state of charge"
+    state_of_health:
+      name: "${name} state of health"
+    capacity_remaining:
+      name: "${name} capacity remaining"
+    total_battery_capacity_setting:
+      name: "${name} total battery capacity setting"
+    charging_cycles:
+      name: "${name} charging cycles"
+    total_charging_cycle_capacity:
+      name: "${name} total charging cycle capacity"
+    total_runtime:
+      name: "${name} total runtime"
+    balancing_current:
+      name: "${name} balancing current"
+    errors_bitmask:
+      name: "${name} errors bitmask"
+    emergency_time_countdown:
+      name: "${name} emergency time countdown"
+    charge_status_id:
+      name: "${name} charge status id"
+    charge_status_time_elapsed:
+      name: "${name} charge status time elapsed"
+
+  #########################################################
+  # READ ONLY CONFIGURATION (mirrored numbers)
+  #########################################################
+
+  #Basic settings sensors
+  - platform: template
+    name: "${name} Cell Count"
+    entity_category: diagnostic
+    lambda: return id(cell_count).state;
+
+  - platform: template
+    name: "${name} Total Battery Capacity"
+    unit_of_measurement: "Ah"
+    device_class: energy_storage
+    entity_category: diagnostic
+    lambda: return id(total_battery_capacity).state;
+
+  - platform: template
+    name: "${name} Balance Trigger Voltage"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(balance_trigger_voltage).state;
+
+  - platform: template
+    name: "${name} Voltage calibration"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(voltage_calibration).state;
+
+  - platform: template
+    name: "${name} Current calibration"
+    unit_of_measurement: "A"
+    device_class: current
+    entity_category: diagnostic
+    lambda: return id(current_calibration).state;
+
+    #Advence setting sensors
+    #Balance
+  - platform: template
+    name: "${name} Start Balance voltage"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(balance_starting_voltage).state;
+
+  - platform: template
+    name: "${name} Max Balance current"
+    unit_of_measurement: "A"
+    device_class: current
+    entity_category: diagnostic
+    lambda: return id(max_balance_current).state;
+
+    #Main voltage stack
+  - platform: template
+    name: "${name} Cell OVP (over valtage protection)"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(cell_voltage_overvoltage_protection).state;
+
+  - platform: template
+    name: "${name} Cell RCV (request charge voltage)"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(cell_request_charge_voltage).state;
+
+  - platform: template
+    name: "${name} Cell SOC-100 Voltage"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(cell_soc100_voltage).state;
+    
+  - platform: template
+    name: "${name} Cell OVPR (over voltage protection recovery)"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(cell_voltage_overvoltage_recovery).state;
+
+  - platform: template
+    name: "${name} Cell UVPR (under voltage protection recovery)"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(cell_voltage_undervoltage_recovery).state;
+
+  - platform: template
+    name: "${name} Cell SOC-0 voltage"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(cell_soc0_voltage).state;
+    
+  - platform: template
+    name: "${name} Cell UVP (under voltage protection)"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(cell_voltage_undervoltage_protection).state;
+
+  - platform: template
+    name: "${name} Power Off voltage"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(power_off_voltage).state;
+
+  - platform: template
+    name: "${name} Cell RFV (request float voltage)"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(cell_request_float_voltage).state;
+
+  - platform: template
+    name: "${name} Smart Sleep Voltage"
+    unit_of_measurement: "V"
+    device_class: voltage
+    entity_category: diagnostic
+    lambda: return id(smart_sleep_voltage).state;
+
+    #smart sleep time
+
+    #Charge current
+    #Max charge current
+  - platform: template
+    name: "${name} Continued Charge Current"
+    unit_of_measurement: "A"
+    device_class: current
+    entity_category: diagnostic
+    lambda: return id(max_charge_current).state;
+
+  - platform: template
+    name: "${name} Charge OCP delay (over current protection)"
+    unit_of_measurement: "s"
+    entity_category: diagnostic
+    lambda: return id(charge_overcurrent_protection_delay).state;
+
+  - platform: template
+    name: "${name} Charge OCPR (over current protection recovery)"
+    unit_of_measurement: "s"
+    entity_category: diagnostic
+    lambda: return id(charge_overcurrent_protection_recovery_time).state;
+
+    #Charge current
+    #Max discharge current
+  - platform: template
+    name: "${name} Continued Discharge Current"
+    unit_of_measurement: "A"
+    device_class: current
+    entity_category: diagnostic
+    lambda: return id(max_discharge_current).state;    
+
+  - platform: template
+    name: "${name} Discharge OCP Delay (over current protection)"
+    unit_of_measurement: "s"
+    entity_category: diagnostic
+    lambda: return id(discharge_overcurrent_protection_delay).state;
+
+  - platform: template
+    name: "${name} Discharge OCPR (over current protection recovery)"
+    unit_of_measurement: "s"
+    entity_category: diagnostic
+    lambda: return id(discharge_overcurrent_protection_recovery_time).state;
+
+    #Temperature
+  - platform: template
+    name: "${name} Charge OTP (over temperature protection)"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    entity_category: diagnostic
+    lambda: return id(charge_overtemperature_protection).state;
+
+  - platform: template
+    name: "${name} Charge OTPR (over temperature protection recovery)"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    entity_category: diagnostic
+    lambda: return id(charge_overtemperature_protection_recovery).state;
+
+  - platform: template
+    name: "${name} Discharge OTP (over temperature protection)"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    entity_category: diagnostic
+    lambda: return id(discharge_overtemperature_protection).state;
+
+  - platform: template
+    name: "${name} Discharge OTPR (over temperature protection recovery)"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    entity_category: diagnostic
+    lambda: return id(discharge_overtemperature_protection_recovery).state;
+
+  - platform: template
+    name: "${name} Charge UTP (under temperature protection)"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    entity_category: diagnostic
+    lambda: return id(charge_undertemperature_protection).state;
+
+  - platform: template
+    name: "${name} Charge UTPR (under temperature protection recovery)"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    entity_category: diagnostic
+    lambda: return id(charge_undertemperature_protection_recovery).state;
+
+    #START TEST PARAM
+    #discharge UTP
+  #- platform: template
+  #  name: "${name} Discharge UTP (under temperature protection)"
+  #  unit_of_measurement: "°C"
+  #  device_class: temperature
+  #  entity_category: diagnostic
+  #  lambda: return id(discharge_undertemperature_protection).state;
+    #discharge UTPR
+  #- platform: template
+  #  name: "${name} Discharge UTPR (under temperature protection recovery)"
+  #  unit_of_measurement: "°C"
+  #  device_class: temperature
+  #  entity_category: diagnostic
+    #END TEST PARAM
+
+  - platform: template
+    name: "${name} Start Heating Temperature"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    entity_category: diagnostic
+    lambda: return id(heating_start_temperature).state;
+
+  - platform: template
+    name: "${name} Stop Heating Temperature"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    entity_category: diagnostic
+    lambda: return id(heating_stop_temperature).state;
+    
+  - platform: template
+    name: "${name} MOS OTP (over temperature protection)"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    entity_category: diagnostic
+    lambda: return id(power_tube_overtemperature_protection).state;
+
+  - platform: template
+    name: "${name} MOS OTPR (over temperature protection recovery)"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    entity_category: diagnostic
+    lambda: return id(power_tube_overtemperature_protection_recovery).state;    
+
+    #SCP
+  - platform: template
+    name: "${name} SCP Delay (short circuit protection)"
+    unit_of_measurement: "µs"
+    entity_category: diagnostic
+    lambda: return id(short_circuit_protection_delay).state;
+
+  - platform: template
+    name: "${name} SCPR Time (short circuit protection recovery)"
+    unit_of_measurement: "s"
+    entity_category: diagnostic
+    lambda: return id(short_circuit_protection_recovery_time).state;
+
+    #misc
+  - platform: template
+    name: "${name} Discharge Precharge Time"
+    unit_of_measurement: "s"
+    entity_category: diagnostic
+    lambda: return id(discharge_precharge_time).state;
+    
+  - platform: template
+    name: "${name} Charge voltage time (!!!RCV Time!!!)"
+    unit_of_measurement: "s"
+    entity_category: diagnostic
+    lambda: return id(cell_request_charge_voltage_time).state;
+
+  - platform: template
+    name: "${name} Float voltage time (!!!)"
+    unit_of_measurement: "s"
+    entity_category: diagnostic
+    lambda: return id(cell_request_float_voltage_time).state;
+  
+
+switch:
+  - platform: jk_bms_ble
+    charging:
+      name: "${name} charging"
+    discharging:
+      name: "${name} discharging"
+    balancer:
+      name: "${name} balancer"
+# Unnecessary for control and can be unsafe
+#   emergency:
+#     name: "${name} emergency"
+#   heating:
+#     name: "${name} heating"
+#    disable_temperature_sensors:
+#      name: "${name} disable temperature sensors"
+#    display_always_on:
+#      name: "${name} display always on"
+#    smart_sleep:
+#      name: "${name} smart sleep"
+#    disable_pcl_module:
+#      name: "${name} disable pcl module"
+#    timed_stored_data:
+#      name: "${name} timed stored data"
+#    charging_float_mode:
+#      name: "${name} charging float mode"
+
+# Dangerous. I think it is wrong to turn off bluetooth connection
+#  - platform: ble_client
+#    ble_client_id: client0
+#    name: "${name} enable bluetooth connection"
+#    id: ble_client_switch0
+
+text_sensor:
+  - platform: jk_bms_ble
+    errors:
+      name: "${name} errors"
+    total_runtime_formatted:
+      name: "${name} total runtime formatted"
+    charge_status:
+      name: "${name} charge status"
+    software_version:
+      name: "${name} software version"
+    hardware_version:
+      name: "${name} hardware version"
+    
+

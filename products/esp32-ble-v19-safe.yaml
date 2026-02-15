@@ -1,6 +1,3 @@
-# This config based on https://github.com/syssi/esphome-jk-bms@main
-# I have forked this project to my https://github.com/Qventeen/esphome-jk-bms
-# This is full config for my jk-pb2a16s150p v19 bms (ble)
 substitutions:
   name: jk-bms-ble
   device_description: "Monitor and control a JK-BMS v19 via bluetooth"
@@ -31,7 +28,7 @@ external_components:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-  output_power: 8.5dB
+# output_power: 8.5dB
   power_save_mode: none
   fast_connect: true
 
@@ -40,11 +37,12 @@ ota:
   password: !secret ota_password
   on_begin:
     then:
-      - switch.turn_off: ble_client_switch0
+#This id commented below
+#      - switch.turn_off: ble_client_switch0
       - logger.log: "BLE connection suspended for OTA update"
 
 logger:
-  level: INFO 
+  level: INFO
   logs:
     esp32_ble_tracker: INFO
     esp32_ble_client: INFO
@@ -98,85 +96,124 @@ button:
     retrieve_device_info:
       name: "${name} retrieve device info"
 
+#I hid all numbers from changes. Only for reading
 number:
   - platform: jk_bms_ble
     jk_bms_ble_id: bms0
     balance_trigger_voltage:
       name: "${name} balance trigger voltage"
+      internal: true #Hide control element
     cell_count:
       name: "${name} cell count"
+      internal: true #Hide control element
     total_battery_capacity:
       name: "${name} total battery capacity"
+      internal: true #Hide control element
     cell_voltage_overvoltage_protection:
       name: "${name} cell voltage overvoltage protection"
+      internal: true #Hide control element
     cell_voltage_overvoltage_recovery:
       name: "${name} cell voltage overvoltage recovery"
+      internal: true #Hide control element
     cell_voltage_undervoltage_protection:
       name: "${name} cell voltage undervoltage protection"
+      internal: true #Hide control element
     cell_voltage_undervoltage_recovery:
       name: "${name} cell voltage undervoltage recovery"
+      internal: true #Hide control element
     balance_starting_voltage:
       name: "${name} balance starting voltage"
+      internal: true #Hide control element
     voltage_calibration:
       name: "${name} voltage calibration"
+      internal: true #Hide control element
     current_calibration:
       name: "${name} current calibration"
+      internal: true #Hide control element
     power_off_voltage:
       name: "${name} power off voltage"
+      internal: true #Hide control element
     max_balance_current:
       name: "${name} max balance current"
+      internal: true #Hide control element
     max_charge_current:
       name: "${name} max charge current"
+      internal: true #Hide control element
     max_discharge_current:
       name: "${name} max discharge current"
+      internal: true #Hide control element
     smart_sleep_voltage:
       name: "${name} smart sleep voltage"
+      internal: true #Hide control element
     cell_soc100_voltage:
       name: "${name} cell soc100 voltage"
+      internal: true #Hide control element
     cell_soc0_voltage:
       name: "${name} cell soc0 voltage"
+      internal: true #Hide control element
     cell_request_charge_voltage:
       name: "${name} cell request charge voltage"
+      internal: true #Hide control element
     cell_request_float_voltage:
       name: "${name} cell request float voltage"
+      internal: true #Hide control element
     cell_request_charge_voltage_time:
       name: "${name} cell request charge voltage time"
+      internal: true #Hide control element
     cell_request_float_voltage_time:
       name: "${name} cell request float voltage time"
+      internal: true #Hide control element
     charge_overcurrent_protection_delay:
       name: "${name} charge overcurrent protection delay"
+      internal: true #Hide control element
     charge_overcurrent_protection_recovery_time:
       name: "${name} charge overcurrent protection recovery time"
+      internal: true #Hide control element
     discharge_overcurrent_protection_delay:
       name: "${name} discharge overcurrent protection delay"
+      internal: true #Hide control element
     discharge_overcurrent_protection_recovery_time:
       name: "${name} discharge overcurrent protection recovery time"
+      internal: true #Hide control element
     short_circuit_protection_delay:
       name: "${name} short circuit protection delay"
+      internal: true #Hide control element
     short_circuit_protection_recovery_time:
       name: "${name} short circuit protection recovery time"
+      internal: true #Hide control element
     charge_overtemperature_protection:
       name: "${name} charge overtemperature protection"
+      internal: true #Hide control element
     charge_overtemperature_protection_recovery:
       name: "${name} charge overtemperature protection recovery"
+      internal: true #Hide control element
     discharge_overtemperature_protection:
       name: "${name} discharge overtemperature protection"
+      internal: true #Hide control element
     discharge_overtemperature_protection_recovery:
       name: "${name} discharge overtemperature protection recovery"
+      internal: true #Hide control element
     charge_undertemperature_protection:
       name: "${name} charge undertemperature protection"
+      internal: true #Hide control element
     charge_undertemperature_protection_recovery:
       name: "${name} charge undertemperature protection recovery"
+      internal: true #Hide control element
     power_tube_overtemperature_protection:
       name: "${name} power tube overtemperature protection"
+      internal: true #Hide control element
     power_tube_overtemperature_protection_recovery:
       name: "${name} power tube overtemperature protection recovery"
+      internal: true #Hide control element
     discharge_precharge_time:
       name: "${name} discharge precharge time"
+      internal: true #Hide control element
     heating_start_temperature:
       name: "${name} heating start temperature"
+      internal: true #Hide control element
     heating_stop_temperature:
       name: "${name} heating stop temperature"
+      internal: true #Hide control element
 
 sensor:
   - platform: jk_bms_ble
@@ -225,38 +262,41 @@ sensor:
       name: "${name} cell voltage 15"
     cell_voltage_16:
       name: "${name} cell voltage 16"
-    cell_resistance_1:
-      name: "${name} cell resistance 1"
-    cell_resistance_2:
-      name: "${name} cell resistance 2"
-    cell_resistance_3:
-      name: "${name} cell resistance 3"
-    cell_resistance_4:
-      name: "${name} cell resistance 4"
-    cell_resistance_5:
-      name: "${name} cell resistance 5"
-    cell_resistance_6:
-      name: "${name} cell resistance 6"
-    cell_resistance_7:
-      name: "${name} cell resistance 7"
-    cell_resistance_8:
-      name: "${name} cell resistance 8"
-    cell_resistance_9:
-      name: "${name} cell resistance 9"
-    cell_resistance_10:
-      name: "${name} cell resistance 10"
-    cell_resistance_11:
-      name: "${name} cell resistance 11"
-    cell_resistance_12:
-      name: "${name} cell resistance 12"
-    cell_resistance_13:
-      name: "${name} cell resistance 13"
-    cell_resistance_14:
-      name: "${name} cell resistance 14"
-    cell_resistance_15:
-      name: "${name} cell resistance 15"
-    cell_resistance_16:
-      name: "${name} cell resistance 16"
+
+# Turn off resistance as unnecessary
+#    cell_resistance_1:
+#      name: "${name} cell resistance 1"
+#    cell_resistance_2:
+#      name: "${name} cell resistance 2"
+#    cell_resistance_3:
+#      name: "${name} cell resistance 3"
+#    cell_resistance_4:
+#      name: "${name} cell resistance 4"
+#    cell_resistance_5:
+#      name: "${name} cell resistance 5"
+#    cell_resistance_6:
+#      name: "${name} cell resistance 6"
+#    cell_resistance_7:
+#      name: "${name} cell resistance 7"
+#    cell_resistance_8:
+#      name: "${name} cell resistance 8"
+#    cell_resistance_9:
+#      name: "${name} cell resistance 9"
+#    cell_resistance_10:
+#      name: "${name} cell resistance 10"
+#    cell_resistance_11:
+#      name: "${name} cell resistance 11"
+#    cell_resistance_12:
+#      name: "${name} cell resistance 12"
+#    cell_resistance_13:
+#      name: "${name} cell resistance 13"
+#    cell_resistance_14:
+#      name: "${name} cell resistance 14"
+#    cell_resistance_15:
+#      name: "${name} cell resistance 15"
+#    cell_resistance_16:
+#      name: "${name} cell resistance 16"
+
     total_voltage:
       name: "${name} total voltage"
     current:
@@ -316,27 +356,29 @@ switch:
       name: "${name} discharging"
     balancer:
       name: "${name} balancer"
-    emergency:
-      name: "${name} emergency"
-    heating:
-      name: "${name} heating"
-    disable_temperature_sensors:
-      name: "${name} disable temperature sensors"
-    display_always_on:
-      name: "${name} display always on"
-    smart_sleep:
-      name: "${name} smart sleep"
-    disable_pcl_module:
-      name: "${name} disable pcl module"
-    timed_stored_data:
-      name: "${name} timed stored data"
-    charging_float_mode:
-      name: "${name} charging float mode"
+# Unnecessary for control and can be unsafe
+#   emergency:
+#     name: "${name} emergency"
+#   heating:
+#     name: "${name} heating"
+#    disable_temperature_sensors:
+#      name: "${name} disable temperature sensors"
+#    display_always_on:
+#      name: "${name} display always on"
+#    smart_sleep:
+#      name: "${name} smart sleep"
+#    disable_pcl_module:
+#      name: "${name} disable pcl module"
+#    timed_stored_data:
+#      name: "${name} timed stored data"
+#    charging_float_mode:
+#      name: "${name} charging float mode"
 
-  - platform: ble_client
-    ble_client_id: client0
-    name: "${name} enable bluetooth connection"
-    id: ble_client_switch0
+# Dangerous. I think it is wrong to turn off bluetooth connection
+#  - platform: ble_client
+#    ble_client_id: client0
+#    name: "${name} enable bluetooth connection"
+#    id: ble_client_switch0
 
 text_sensor:
   - platform: jk_bms_ble
@@ -350,4 +392,4 @@ text_sensor:
       name: "${name} software version"
     hardware_version:
       name: "${name} hardware version"
-
+    
