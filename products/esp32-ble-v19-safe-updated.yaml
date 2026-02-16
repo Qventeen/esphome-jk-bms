@@ -1,5 +1,5 @@
 substitutions:
-  name: jk-bms-ble-1
+  name: jk-bms-ble
   device_description: "Monitor and control a JK-BMS v19 via bluetooth"
   external_components_source: github://syssi/esphome-jk-bms@main
   mac_address: A4:C1:38:05:17:7D
