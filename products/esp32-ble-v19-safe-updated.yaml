@@ -37,8 +37,7 @@ ota:
   password: !secret ota_password
   on_begin:
     then:
-#This id commented below
-#      - switch.turn_off: ble_client_switch0
+      - switch.turn_off: ble_client_switch0
       - logger.log: "BLE connection suspended for OTA update"
 
 logger:
@@ -281,7 +280,8 @@ sensor:
  #########################################################
   - platform: jk_bms_ble
     jk_bms_ble_id: bms0
-        #monitoring
+   
+    #Voltage monitoring
     min_cell_voltage:
       name: "${name} min cell voltage"
     max_cell_voltage:
@@ -326,8 +326,8 @@ sensor:
       name: "${name} cell voltage 15"
     cell_voltage_16:
       name: "${name} cell voltage 16"
-
-# Turn off resistance as unnecessary
+    
+    #Resistense
     cell_resistance_1:
       name: "${name} cell resistance 1"
     cell_resistance_2:
@@ -727,11 +727,10 @@ switch:
 #    charging_float_mode:
 #      name: "${name} charging float mode"
 
-# Dangerous. I think it is wrong to turn off bluetooth connection
-#  - platform: ble_client
-#    ble_client_id: client0
-#    name: "${name} enable bluetooth connection"
-#    id: ble_client_switch0
+  - platform: ble_client
+    ble_client_id: client0
+    name: "${name} enable bluetooth connection"
+    id: ble_client_switch0
 
 text_sensor:
   - platform: jk_bms_ble
