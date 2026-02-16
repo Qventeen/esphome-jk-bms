@@ -95,6 +95,58 @@ button:
     retrieve_device_info:
       name: "${name} retrieve device info"
 
+button:
+  - platform: jk_bms_ble
+    retrieve_settings:
+      name: "${name} retrieve settings"
+      id: btn_retrieve_settings
+      on_press:
+        then:
+          - delay: 2s 
+          - component.update: ts_cell_count
+          - component.update: ts_total_capacity
+          - component.update: ts_balance_trigger.update
+          - component.update: ts_volt_calib
+          - component.update: ts_curr_calib
+          - component.update: ts_start_bal
+          - component.update: ts_max_bal
+          - component.update: ts_ovp
+          - component.update: ts_rcv
+          - component.update: ts_soc100
+          - component.update: ts_ovpr
+          - component.update: ts_uvpr
+          - component.update: ts_soc0
+          - component.update: ts_uvp
+          - component.update: ts_power_off
+          - component.update: ts_rfv
+          - component.update: ts_smart_sleep
+          - component.update: ts_chg_curr
+          - component.update: ts_chg_ocp_delay
+          - component.update: ts_chg_ocpr
+          - component.update: ts_dis_curr
+          - component.update: ts_dis_ocp_delay
+          - component.update: ts_dis_ocpr
+          - component.update: ts_chg_otp
+          - component.update: ts_chg_otpr
+          - component.update: ts_dis_otp
+          - component.update: ts_dis_otpr
+          - component.update: ts_chg_utp
+          - component.update: ts_chg_utpr
+          - component.update: ts_heat_start
+          - component.update: ts_heat_stop
+          - component.update: ts_mos_otp
+          - component.update: ts_mos_otpr
+          - component.update: ts_scp_delay
+          - component.update: ts_scpr_time
+          - component.update: ts_precharge
+          - component.update: ts_rcv_time
+          - component.update: ts_rfv_time
+
+    retrieve_device_info:
+      name: "${name} retrieve device info"
+      # Hardware/Software versions are usually text_sensors 
+      # and update automatically, so no extra logic needed here.
+      
 #I hid all numbers from changes. Only for reading
 number:
   - platform: jk_bms_ble
@@ -104,7 +156,7 @@ number:
       name: "${name} balance trigger voltage"
       internal: true #Hide control element
     cell_count:
-      id: cell_count
+      id: cell_count:
       name: "${name} cell count"
       internal: true #Hide control element
     total_battery_capacity:
@@ -415,289 +467,336 @@ sensor:
   #########################################################
   # READ ONLY CONFIGURATION (mirrored numbers)
   #########################################################
-
-  #Basic settings sensors
+ sensor:
   - platform: template
+    id: ts_cell_count
     name: "${name} Cell Count"
     entity_category: diagnostic
+    accuracy_decimals: 0
     lambda: return id(cell_count).state;
 
   - platform: template
+    id: ts_total_capacity
     name: "${name} Total Battery Capacity"
     unit_of_measurement: "Ah"
     device_class: energy_storage
     entity_category: diagnostic
+    accuracy_decimals: 1
     lambda: return id(total_battery_capacity).state;
 
   - platform: template
+    id: ts_balance_trigger
     name: "${name} Balance Trigger Voltage"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(balance_trigger_voltage).state;
 
   - platform: template
+    id: ts_volt_calib
     name: "${name} Voltage calibration"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(voltage_calibration).state;
 
   - platform: template
+    id: ts_curr_calib
     name: "${name} Current calibration"
     unit_of_measurement: "A"
     device_class: current
     entity_category: diagnostic
+    accuracy_decimals: 2
     lambda: return id(current_calibration).state;
 
-    #Advence setting sensors
-    #Balance
   - platform: template
+    id: ts_start_bal
     name: "${name} Start Balance voltage"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(balance_starting_voltage).state;
 
   - platform: template
+    id: ts_max_bal
     name: "${name} Max Balance current"
     unit_of_measurement: "A"
     device_class: current
     entity_category: diagnostic
+    accuracy_decimals: 2
     lambda: return id(max_balance_current).state;
 
-    #Main voltage stack
   - platform: template
+    id: ts_ovp
     name: "${name} Cell OVP (over valtage protection)"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(cell_voltage_overvoltage_protection).state;
 
   - platform: template
+    id: ts_rcv
     name: "${name} Cell RCV (request charge voltage)"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(cell_request_charge_voltage).state;
 
   - platform: template
+    id: ts_soc100
     name: "${name} Cell SOC-100 Voltage"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(cell_soc100_voltage).state;
-    
+
   - platform: template
+    id: ts_ovpr
     name: "${name} Cell OVPR (over voltage protection recovery)"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(cell_voltage_overvoltage_recovery).state;
 
   - platform: template
+    id: ts_uvpr
     name: "${name} Cell UVPR (under voltage protection recovery)"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(cell_voltage_undervoltage_recovery).state;
 
   - platform: template
+    id: ts_soc0
     name: "${name} Cell SOC-0 voltage"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(cell_soc0_voltage).state;
-    
+
   - platform: template
+    id: ts_uvp
     name: "${name} Cell UVP (under voltage protection)"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(cell_voltage_undervoltage_protection).state;
 
   - platform: template
+    id: ts_power_off
     name: "${name} Power Off voltage"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(power_off_voltage).state;
 
   - platform: template
+    id: ts_rfv
     name: "${name} Cell RFV (request float voltage)"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(cell_request_float_voltage).state;
 
   - platform: template
+    id: ts_smart_sleep
     name: "${name} Smart Sleep Voltage"
     unit_of_measurement: "V"
     device_class: voltage
     entity_category: diagnostic
+    accuracy_decimals: 3
     lambda: return id(smart_sleep_voltage).state;
 
-    #smart sleep time
-
-    #Charge current
-    #Max charge current
   - platform: template
+    id: ts_chg_curr
     name: "${name} Continued Charge Current"
     unit_of_measurement: "A"
     device_class: current
     entity_category: diagnostic
+    accuracy_decimals: 1
     lambda: return id(max_charge_current).state;
 
   - platform: template
+    id: ts_chg_ocp_delay
     name: "${name} Charge OCP delay (over current protection)"
     unit_of_measurement: "s"
     entity_category: diagnostic
+    accuracy_decimals: 0
     lambda: return id(charge_overcurrent_protection_delay).state;
 
   - platform: template
+    id: ts_chg_ocpr
     name: "${name} Charge OCPR (over current protection recovery)"
     unit_of_measurement: "s"
     entity_category: diagnostic
+    accuracy_decimals: 0
     lambda: return id(charge_overcurrent_protection_recovery_time).state;
 
-    #Charge current
-    #Max discharge current
   - platform: template
+    id: ts_dis_curr
     name: "${name} Continued Discharge Current"
     unit_of_measurement: "A"
     device_class: current
     entity_category: diagnostic
-    lambda: return id(max_discharge_current).state;    
+    accuracy_decimals: 1
+    lambda: return id(max_discharge_current).state;
 
   - platform: template
+    id: ts_dis_ocp_delay
     name: "${name} Discharge OCP Delay (over current protection)"
     unit_of_measurement: "s"
     entity_category: diagnostic
+    accuracy_decimals: 0
     lambda: return id(discharge_overcurrent_protection_delay).state;
 
   - platform: template
+    id: ts_dis_ocpr
     name: "${name} Discharge OCPR (over current protection recovery)"
     unit_of_measurement: "s"
     entity_category: diagnostic
+    accuracy_decimals: 0
     lambda: return id(discharge_overcurrent_protection_recovery_time).state;
 
-    #Temperature
   - platform: template
+    id: ts_chg_otp
     name: "${name} Charge OTP (over temperature protection)"
     unit_of_measurement: "°C"
     device_class: temperature
     entity_category: diagnostic
+    accuracy_decimals: 1
     lambda: return id(charge_overtemperature_protection).state;
 
   - platform: template
+    id: ts_chg_otpr
     name: "${name} Charge OTPR (over temperature protection recovery)"
     unit_of_measurement: "°C"
     device_class: temperature
     entity_category: diagnostic
+    accuracy_decimals: 1
     lambda: return id(charge_overtemperature_protection_recovery).state;
 
   - platform: template
+    id: ts_dis_otp
     name: "${name} Discharge OTP (over temperature protection)"
     unit_of_measurement: "°C"
     device_class: temperature
     entity_category: diagnostic
+    accuracy_decimals: 1
     lambda: return id(discharge_overtemperature_protection).state;
 
   - platform: template
+    id: ts_dis_otpr
     name: "${name} Discharge OTPR (over temperature protection recovery)"
     unit_of_measurement: "°C"
     device_class: temperature
     entity_category: diagnostic
+    accuracy_decimals: 1
     lambda: return id(discharge_overtemperature_protection_recovery).state;
 
   - platform: template
+    id: ts_chg_utp
     name: "${name} Charge UTP (under temperature protection)"
     unit_of_measurement: "°C"
     device_class: temperature
     entity_category: diagnostic
+    accuracy_decimals: 1
     lambda: return id(charge_undertemperature_protection).state;
 
   - platform: template
+    id: ts_chg_utpr
     name: "${name} Charge UTPR (under temperature protection recovery)"
     unit_of_measurement: "°C"
     device_class: temperature
     entity_category: diagnostic
+    accuracy_decimals: 1
     lambda: return id(charge_undertemperature_protection_recovery).state;
 
-    #START TEST PARAM
-    #discharge UTP
-  #- platform: template
-  #  name: "${name} Discharge UTP (under temperature protection)"
-  #  unit_of_measurement: "°C"
-  #  device_class: temperature
-  #  entity_category: diagnostic
-  #  lambda: return id(discharge_undertemperature_protection).state;
-    #discharge UTPR
-  #- platform: template
-  #  name: "${name} Discharge UTPR (under temperature protection recovery)"
-  #  unit_of_measurement: "°C"
-  #  device_class: temperature
-  #  entity_category: diagnostic
-    #END TEST PARAM
-
   - platform: template
+    id: ts_heat_start
     name: "${name} Start Heating Temperature"
     unit_of_measurement: "°C"
     device_class: temperature
     entity_category: diagnostic
+    accuracy_decimals: 1
     lambda: return id(heating_start_temperature).state;
 
   - platform: template
+    id: ts_heat_stop
     name: "${name} Stop Heating Temperature"
     unit_of_measurement: "°C"
     device_class: temperature
     entity_category: diagnostic
+    accuracy_decimals: 1
     lambda: return id(heating_stop_temperature).state;
-    
+
   - platform: template
+    id: ts_mos_otp
     name: "${name} MOS OTP (over temperature protection)"
     unit_of_measurement: "°C"
     device_class: temperature
     entity_category: diagnostic
+    accuracy_decimals: 1
     lambda: return id(power_tube_overtemperature_protection).state;
 
   - platform: template
+    id: ts_mos_otpr
     name: "${name} MOS OTPR (over temperature protection recovery)"
     unit_of_measurement: "°C"
     device_class: temperature
     entity_category: diagnostic
-    lambda: return id(power_tube_overtemperature_protection_recovery).state;    
+    accuracy_decimals: 1
+    lambda: return id(power_tube_overtemperature_protection_recovery).state;
 
-    #SCP
   - platform: template
+    id: ts_scp_delay
     name: "${name} SCP Delay (short circuit protection)"
     unit_of_measurement: "µs"
     entity_category: diagnostic
+    accuracy_decimals: 0
     lambda: return id(short_circuit_protection_delay).state;
 
   - platform: template
+    id: ts_scpr_time
     name: "${name} SCPR Time (short circuit protection recovery)"
     unit_of_measurement: "s"
     entity_category: diagnostic
+    accuracy_decimals: 0
     lambda: return id(short_circuit_protection_recovery_time).state;
 
-    #misc
   - platform: template
+    id: ts_precharge
     name: "${name} Discharge Precharge Time"
     unit_of_measurement: "s"
     entity_category: diagnostic
+    accuracy_decimals: 0
     lambda: return id(discharge_precharge_time).state;
-    
+
   - platform: template
+    id: ts_rcv_time
     name: "${name} Charge voltage time (!!!RCV Time!!!)"
     unit_of_measurement: "s"
     entity_category: diagnostic
+    accuracy_decimals: 0
     lambda: return id(cell_request_charge_voltage_time).state;
 
   - platform: template
+    id: ts_rfv_time
     name: "${name} Float voltage time (!!!)"
     unit_of_measurement: "s"
     entity_category: diagnostic
+    accuracy_decimals: 0
     lambda: return id(cell_request_float_voltage_time).state;
   
 
