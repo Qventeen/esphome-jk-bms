@@ -1,5 +1,5 @@
 substitutions:
-  name: jk-bms-ble
+  name: jk-bms-ble-1
   device_description: "Monitor and control a JK-BMS v19 via bluetooth"
   external_components_source: github://syssi/esphome-jk-bms@main
   mac_address: A4:C1:38:05:17:7D
@@ -92,20 +92,13 @@ button:
   - platform: jk_bms_ble
     retrieve_settings:
       name: "${name} retrieve settings"
-    retrieve_device_info:
-      name: "${name} retrieve device info"
-
-button:
-  - platform: jk_bms_ble
-    retrieve_settings:
-      name: "${name} retrieve settings"
       id: btn_retrieve_settings
       on_press:
         then:
           - delay: 2s 
           - component.update: ts_cell_count
           - component.update: ts_total_capacity
-          - component.update: ts_balance_trigger.update
+          - component.update: ts_balance_trigger
           - component.update: ts_volt_calib
           - component.update: ts_curr_calib
           - component.update: ts_start_bal
@@ -156,7 +149,7 @@ number:
       name: "${name} balance trigger voltage"
       internal: true #Hide control element
     cell_count:
-      id: cell_count:
+      id: cell_count
       name: "${name} cell count"
       internal: true #Hide control element
     total_battery_capacity:
@@ -467,7 +460,6 @@ sensor:
   #########################################################
   # READ ONLY CONFIGURATION (mirrored numbers)
   #########################################################
- sensor:
   - platform: template
     id: ts_cell_count
     name: "${name} Cell Count"
@@ -843,5 +835,3 @@ text_sensor:
       name: "${name} software version"
     hardware_version:
       name: "${name} hardware version"
-    
-
